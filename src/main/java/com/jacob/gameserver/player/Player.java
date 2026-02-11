@@ -9,7 +9,7 @@ public class Player {
     private int rating;
     private boolean online;
 
-    public Player(String username) {
+    public Player(String username, int i) {
         this.id = UUID.randomUUID();
         this.username = username;
         this.rating = 1000;

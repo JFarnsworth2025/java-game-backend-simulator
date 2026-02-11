@@ -10,7 +10,7 @@ public class Match {
     private final Player playerOne;
     private final Player playerTwo;
 
-    public Match(Player playerOne, Player playerTwo) {
+    public Match(UUID uuid, Player playerOne, Player playerTwo) {
         this.matchId = UUID.randomUUID();
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;

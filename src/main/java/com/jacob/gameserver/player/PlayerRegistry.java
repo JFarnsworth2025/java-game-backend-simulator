@@ -10,7 +10,7 @@ public class PlayerRegistry {
     private final Map<UUID, Player> players = new HashMap<>();
 
     public Player registerPlayer(String username) {
-        Player player = new Player(username);
+        Player player = new Player(username, 1000);
         players.put(player.getId(), player);
         return player;
     }
