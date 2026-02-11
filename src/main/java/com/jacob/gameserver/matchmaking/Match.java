@@ -32,8 +32,8 @@ public class Match {
     public String toString() {
         return "Match{" +
                 "matchId=" + matchId +
-                ", playerOne=" + playerOne +
-                ", playerTwo=" + playerTwo +
+                ", playerOne=" + playerOne.getUsername() +
+                ", playerTwo=" + playerTwo.getUsername() +
                 '}';
     }
 }
