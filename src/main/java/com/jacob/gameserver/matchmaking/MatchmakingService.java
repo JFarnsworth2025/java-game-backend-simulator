@@ -2,12 +2,13 @@ package com.jacob.gameserver.matchmaking;
 
 import com.jacob.gameserver.player.Player;
 
-import java.util.LinkedList;
-import java.util.Queue;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MatchmakingService {
 
-    private final Queue<Player> queue = new LinkedList<>();
+    private final List<Player> queue = new ArrayList<>();
+    private static final int RATING_THRESHOLD = 100;
 
     public void joinQueue(Player player) {
         if(!player.isOnline()) {
@@ -15,21 +16,29 @@ public class MatchmakingService {
         }
 
         queue.add(player);
-        System.out.println(player.getUsername() + " joined matchmaking.");
+        System.out.println(player.getUsername() + " joined matchmaking");
     }
 
-    public void attemptMatch() {
-        if(queue.size() < 2) {
-            System.out.println("Not enough players to create a match.");
-            return;
+    public Match attemptMatch() {
+        for(int i = 0; i < queue.size(); i++) {
+            Player p1 = queue.get(i);
+
+            for(int j = i + 1; j < queue.size(); j++) {
+                Player p2 = queue.get(j);
+
+                if(Math.abs(p1.getRating() - p2.getRating()) <= RATING_THRESHOLD) {
+                    queue.remove(p1);
+                    queue.remove(p2);
+
+                    Match match = new Match(p1, p2);
+                    System.out.println("Match Created:" + match);
+                    return match;
+                }
+            }
         }
 
-        Player p1 = queue.poll();
-        Player p2 = queue.poll();
-
-        System.out.println("Match created between: ");
-        System.out.println(" - " + p1.getUsername());
-        System.out.println(" - " + p2.getUsername());
+        System.out.println("No suitable match found.");
+        return null;
     }
 
     public int getQueueSize() {

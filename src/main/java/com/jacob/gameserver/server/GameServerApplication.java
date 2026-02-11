@@ -14,12 +14,19 @@ public class GameServerApplication {
 
         Player p1 = registry.registerPlayer("ShadowHunter");
         Player p2 = registry.registerPlayer("NovaStrike");
+        Player p3 = registry.registerPlayer("LowRankPlayer");
 
         p1.setOnline(true);
         p2.setOnline(true);
+        p3.setOnline(true);
+
+        p1.updateRating(1000);
+        p2.updateRating(1100);
+        p3.updateRating(800);
 
         matchmaking.joinQueue(p1);
         matchmaking.joinQueue(p2);
+        matchmaking.joinQueue(p3);
 
         matchmaking.attemptMatch();
     }
