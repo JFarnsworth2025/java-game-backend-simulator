@@ -15,8 +15,11 @@ public class PlayerController {
     }
 
    @PostMapping("/players")
-    public ResponseEntity<Player> createPlayer(@RequestParam String username) {
-       return ResponseEntity.ok(playerService.createPlayer(username));
+    public ResponseEntity<Player> createPlayer(
+            @RequestParam String username,
+            @RequestParam int rating) {
+
+       return ResponseEntity.ok(playerService.createPlayer(username, rating));
    }
 
    @GetMapping("/players")

@@ -11,8 +11,8 @@ public class PlayerService {
 
     private final Map<String, Player> players = new HashMap<>();
 
-    public Player createPlayer(String username) {
-        Player player = new Player(username, 1000);
+    public Player createPlayer(String username, int rating) {
+        Player player = new Player(username, rating);
         players.put(username, player);
         return player;
     }

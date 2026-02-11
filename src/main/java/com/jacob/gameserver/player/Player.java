@@ -1,23 +1,13 @@
 package com.jacob.gameserver.player;
 
-import java.util.UUID;
-
 public class Player {
 
-    private final UUID id;
-    private String username;
-    private int rating;
-    private boolean online;
+    private final String username;
+    private final int rating;
 
-    public Player(String username, int i) {
-        this.id = UUID.randomUUID();
+    public Player(String username, int rating) {
         this.username = username;
-        this.rating = 1000;
-        this.online = false;
-    }
-
-    public UUID getId() {
-        return id;
+        this.rating = rating;
     }
 
     public String getUsername() {
@@ -28,24 +18,4 @@ public class Player {
         return rating;
     }
 
-    public boolean isOnline() {
-        return online;
-    }
-
-    public void setOnline(boolean online) {
-        this.online = online;
-    }
-
-    public void updateRating(int newRating) {
-        this.rating = newRating;
-    }
-
-    @Override
-    public String toString() {
-        return "Player{" +
-                "id=" + id +
-                ", rating=" + rating +
-                ", online=" + online +
-                "}";
-    }
 }

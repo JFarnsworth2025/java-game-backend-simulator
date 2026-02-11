@@ -12,9 +12,6 @@ public class MatchmakingService {
     private static final int RATING_THRESHOLD = 100;
 
     public Match joinQueue(Player player) {
-        if(!player.isOnline()) {
-            throw new IllegalStateException("Player must be online to join matchmaking.");
-        }
 
         queue.add(player);
         System.out.println(player.getUsername() + " joined matchmaking");

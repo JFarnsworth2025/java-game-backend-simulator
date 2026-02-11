@@ -20,21 +20,23 @@ public class MatchmakingService {
             return null;
         }
 
+        for(Player queuedPlayer : queue) {
+
+            int ratingDifference = Math.abs(queuedPlayer.getRating() - player.getRating());
+
+            if(ratingDifference <= 100) {
+                queue.remove(queuedPlayer);
+                playersInQueue.remove(queuedPlayer.getUsername());
+
+                Match match = new Match(UUID.randomUUID(), queuedPlayer, player);
+                activeMatches.add(match);
+
+                return match;
+            }
+        }
+
         queue.add(player);
         playersInQueue.add(player.getUsername());
-
-        if(queue.size() >= 2) {
-            Player playerOne = queue.poll();
-            Player playerTwo = queue.poll();
-
-            playersInQueue.remove(playerOne.getUsername());
-            playersInQueue.remove(playerTwo.getUsername());
-
-            Match match = new Match(UUID.randomUUID(), playerOne, playerTwo);
-            activeMatches.add(match);
-
-            return match;
-        }
 
         return null;
     }
