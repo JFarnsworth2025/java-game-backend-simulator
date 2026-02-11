@@ -1,5 +1,6 @@
 package com.jacob.gameserver.server;
 
+import com.jacob.gameserver.matchmaking.MatchmakingService;
 import com.jacob.gameserver.player.Player;
 import com.jacob.gameserver.player.PlayerRegistry;
 
@@ -9,12 +10,18 @@ public class GameServerApplication {
         System.out.println("Game Server Backend Starting...");
 
         PlayerRegistry registry = new PlayerRegistry();
+        MatchmakingService matchmaking = new MatchmakingService();
 
         Player p1 = registry.registerPlayer("ShadowHunter");
-        p1.setOnline(true);
+        Player p2 = registry.registerPlayer("NovaStrike");
 
-        System.out.println("All players:");
-        registry.getAllPlayers().forEach(System.out::println);
+        p1.setOnline(true);
+        p2.setOnline(true);
+
+        matchmaking.joinQueue(p1);
+        matchmaking.joinQueue(p2);
+
+        matchmaking.attemptMatch();
     }
 
 }
