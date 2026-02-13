@@ -34,7 +34,7 @@ public class MatchmakingController {
         Match match = matchmakingService.joinQueue(player);
 
         if(match == null) {
-            return ResponseEntity.ok("Joined Queue or already waiting...");
+            return ResponseEntity.ok().body(null);
         }
 
         return ResponseEntity.ok(match);

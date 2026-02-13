@@ -3,7 +3,7 @@ package com.jacob.gameserver.player;
 public class Player {
 
     private final String username;
-    private final int rating;
+    private int rating;
 
     public Player(String username, int rating) {
         this.username = username;
@@ -16,6 +16,10 @@ public class Player {
 
     public int getRating() {
         return rating;
+    }
+
+    public void adjustRating(int amount) {
+        this.rating += amount;
     }
 
 }

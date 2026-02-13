@@ -32,4 +32,14 @@ public class PlayerController {
 
         return ResponseEntity.ok(player);
    }
+
+   @GetMapping("/leaderboard")
+   public ResponseEntity<?> getLeaderboard() {
+        return ResponseEntity.ok(playerService.getLeaderboard());
+   }
+
+   @GetMapping("/players/all")
+    public ResponseEntity<?> getAllPlayers() {
+        return ResponseEntity.ok(playerService.getAllPlayers());
+   }
 }
