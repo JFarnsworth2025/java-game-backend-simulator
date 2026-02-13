@@ -22,15 +22,9 @@ public class PlayerController {
        return ResponseEntity.ok(playerService.createPlayer(username, rating));
    }
 
-   @GetMapping("/players")
+    @GetMapping("/players")
     public ResponseEntity<Player> getPlayer(@RequestParam String username) {
-        Player player = playerService.getPlayer(username);
-
-        if(player == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.ok(player);
+       return playerService.getPlayer(username).map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
    }
 
    @GetMapping("/leaderboard")

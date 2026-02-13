@@ -1,34 +1,39 @@
 package com.jacob.gameserver.server.service;
 
 import com.jacob.gameserver.player.Player;
+import com.jacob.gameserver.repository.PlayerRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 public class PlayerService {
 
-    private final Map<String, Player> players = new HashMap<>();
+    private final PlayerRepository playerRepository;
 
-    public List<Player> getLeaderboard() {
-        return players.values().stream().sorted((p1, p2) -> Integer.compare(p2.getRating(), p1.getRating())).toList();
-    }
-
-    public Collection<Player> getAllPlayers() {
-        return players.values();
+    public PlayerService(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
     }
 
     public Player createPlayer(String username, int rating) {
+
+        if(playerRepository.findByUsername(username).isPresent()) {
+            throw new RuntimeException("Username already exists");
+        }
+
         Player player = new Player(username, rating);
-        players.put(username, player);
-        return player;
+        return playerRepository.save(player);
     }
 
-    public Player getPlayer(String username) {
-        return players.get(username);
+    public Optional<Player> getPlayer(String username) {
+        return playerRepository.findByUsername(username);
     }
 
+    public List<Player> getAllPlayers() {
+        return playerRepository.findAll();
+    }
+
+    public List<Player> getLeaderboard() {
+        return playerRepository.findAllByOrderByRatingDesc();
+    }
 }

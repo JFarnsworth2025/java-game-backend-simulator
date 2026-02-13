@@ -2,6 +2,7 @@ package com.jacob.gameserver.server.service;
 
 import com.jacob.gameserver.matchmaking.Match;
 import com.jacob.gameserver.player.Player;
+import com.jacob.gameserver.repository.PlayerRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -10,9 +11,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 @Service
 public class MatchmakingService {
 
+    private final PlayerRepository playerRepository;
     private final Queue<Player> queue = new ConcurrentLinkedQueue<>();
     private final Set<String> playersInQueue = new HashSet<>();
     private final Map<UUID, Match> activeMatches = new HashMap<>();
+
+    public MatchmakingService(PlayerRepository playerRepository) {
+        this.playerRepository = playerRepository;
+    }
+
+    private static final int K_FACTOR = 32;
 
     public synchronized Match joinQueue(Player player) {
 
@@ -29,8 +37,9 @@ public class MatchmakingService {
         for(Player queuedPlayer : queue) {
 
             int ratingDifference = Math.abs(queuedPlayer.getRating() - player.getRating());
+            int dynamicRange = 100 + (queue.size() * 50);
 
-            if(ratingDifference <= 100) {
+            if(ratingDifference <= dynamicRange) {
                 queue.remove(queuedPlayer);
                 playersInQueue.remove(queuedPlayer.getUsername());
 
@@ -53,6 +62,20 @@ public class MatchmakingService {
 
     public Collection<Match> getActiveMatches() {
         return activeMatches.values();
+    }
+
+    private void updateRatings(Player winner, Player loser) {
+
+        double expectedWinner = 1.0 / (1 + Math.pow(10, (loser.getRating() - winner.getRating()) / 400.0));
+
+        double expectedLoser = 1.0 / (1 + Math.pow(10, (winner.getRating() - loser.getRating()) / 400.0));
+
+        int newWinnerRating = (int) (winner.getRating() + K_FACTOR * (1 - expectedWinner));
+
+        int newLoserRating = (int) (loser.getRating() + K_FACTOR * (0 - expectedLoser));
+
+        winner.adjustRating(newWinnerRating - winner.getRating());
+        loser.adjustRating(newLoserRating - loser.getRating());
     }
 
     public synchronized Match completeMatch(UUID matchId, String winnerUsername) {
@@ -78,8 +101,9 @@ public class MatchmakingService {
             return null;
         }
 
-        winner.adjustRating(25);
-        loser.adjustRating(-25);
+        updateRatings(winner, loser);
+        playerRepository.save(winner);
+        playerRepository.save(loser);
 
         activeMatches.remove(matchId);
 

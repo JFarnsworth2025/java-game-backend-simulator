@@ -1,8 +1,7 @@
 package com.jacob.gameserver.controller;
 
-import com.jacob.gameserver.server.service.MatchmakingService;
-import com.jacob.gameserver.player.Player;
 import com.jacob.gameserver.matchmaking.Match;
+import com.jacob.gameserver.server.service.MatchmakingService;
 import com.jacob.gameserver.server.service.PlayerService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,18 +24,10 @@ public class MatchmakingController {
     @PostMapping("/join")
     public ResponseEntity<?> joinQueue(@RequestParam String username) {
 
-        Player player = playerService.getPlayer(username);
+        return playerService.getPlayer(username).map(player -> {
+            Match match = matchmakingService.joinQueue(player);
+            return ResponseEntity.ok(match);
+        }).orElse(ResponseEntity.notFound().build());
 
-        if(player == null) {
-            return ResponseEntity.notFound().build();
-        }
-
-        Match match = matchmakingService.joinQueue(player);
-
-        if(match == null) {
-            return ResponseEntity.ok().body(null);
-        }
-
-        return ResponseEntity.ok(match);
     }
 }
