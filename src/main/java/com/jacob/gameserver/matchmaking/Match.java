@@ -26,6 +26,7 @@ public class Match {
 
     private String winnerUsername;
     private LocalDateTime createdAt;
+    private LocalDateTime completedAt;
     private boolean completed;
 
     public Match(UUID matchId, Player playerOne, Player playerTwo) {
@@ -52,9 +53,13 @@ public class Match {
 
     public boolean isCompleted() { return completed; }
 
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public LocalDateTime getCompletedAt() { return completedAt; }
+
     public void complete(String winnerUsername) {
         this.winnerUsername = winnerUsername;
         this.completed = true;
+        this.completedAt = LocalDateTime.now();
     }
 
     public String getWinnerUsername() {
