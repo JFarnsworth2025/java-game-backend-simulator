@@ -1,29 +1,43 @@
 # Java Game Backend Simulator
 
-A backend service built with Spring Boot that simulates core systems behind an online competitive game, including matchmaking, Elo-based ranking, persistent player storage, and leaderboards.
+A Spring Boot backend that simulates core systems behind an online competitive game, including matchmaking, Elo-based ranking, persistent player storage, match history, and leaderboards.
 
-This project focuses on backend architecture, service-layer design, database integration, and realistic game system logic.
+This project focuses on backend architecture, service-layer design, database persistence, and realistic multiplayer system logic.
 
 ---
 
 ## Features
 
-- Player creation and management
+### Player System
+- Create players with custom rating
+- Retrieve player information
 - Persistent storage using H2 (file-based)
-- Matchmaking system with dynamic rating range
-- Match lifecycle (join, active match tracking, completion)
-- Elo rating algorithm for competitive ranking
-- Leaderboard sorted by rating
-- REST API built with Spring Boot
-- JPA + Repository pattern architecture
+- Leaderboard sorted by rating (descending)
+
+### Matchmaking System
+- Dynamic rating-based matchmaking range
+- Prevents duplicate queue entries
+- Active match persistence
+- Match completion endpoint
+
+### Competitive Ranking
+- Elo rating algorithm (K-factor 32)
+- Rating updates based on expected outcome
+- Ratings persist across application restarts
+
+### Match History
+- Active matches endpoint
+- Completed match tracking
+- Persistent match records
 
 ---
 
 ## Tech Stack
 
-- Java
-- Spring Boot
+- Java 23
+- Spring Boot 3
 - Spring Data JPA
+- Hibernate
 - H2 Database (file-based persistence)
 - Maven
 
@@ -32,43 +46,76 @@ This project focuses on backend architecture, service-layer design, database int
 ## API Endpoints
 
 ### Players
-- `POST /players?username=&rating=` – Create player
-- `GET /players?username=` – Get player by username
-- `GET /players/all` – Get all players
-- `GET /leaderboard` – Get leaderboard (sorted by rating)
+
+POST `/players?username=&rating=`  
+GET `/players?username=`  
+GET `/players/all`  
+GET `/leaderboard`
 
 ### Matchmaking
-- `POST /matchmaking/join?username=` – Join matchmaking queue
-- `GET /matches` – View active matches
-- `POST /matches/{matchId}/complete?winner=` – Complete match and update ratings
+
+POST `/matchmaking/join?username=`
+
+### Matches
+
+GET `/matches`  
+POST `/matches/{matchId}/complete?winner=`  
+GET `/matches/history`  
+GET `/matches/history/{username}`  
+POST `/matches/reset`
 
 ---
 
-## Architecture Overview
+## Architecture
 
 Controller → Service → Repository → Database
 
-- Controllers handle HTTP requests
-- Services contain business logic (Elo, matchmaking)
-- Repositories manage database interaction
-- H2 provides persistent storage
+- **Controllers** handle HTTP requests
+- **Services** contain business logic (Elo calculation, matchmaking logic)
+- **Repositories** manage database access via Spring Data JPA
+- **H2 Database** provides file-based persistent storage
+
+---
+
+## Running the Application
+
+1. Clone the repository
+2. Run:
+
+   mvn spring-boot:run
+
+3. Application runs at:
+   http://localhost:8080
+
+---
+
+## Database Access
+
+H2 Console (development use only):
+
+http://localhost:8080/h2-console
+
+JDBC URL:
+
+jdbc:h2:file:./data/gamedb
 
 ---
 
 ## Current Capabilities
 
 - Ratings persist across restarts
-- Elo-based ranking adjusts based on expected outcome
+- Elo-based ranking adjusts correctly
 - Leaderboard reflects live database state
+- Match records persist in database
 - Dynamic matchmaking range prevents dead queues
 
 ---
 
 ## Future Improvements
 
-- Persist match history
-- Add DTO layer
+- Introduce DTO layer
 - Add global exception handling
-- Introduce integration tests
+- Add integration tests
+- Implement authentication
 - Switch to PostgreSQL
 - Dockerize application
