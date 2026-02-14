@@ -12,5 +12,7 @@ public interface MatchRepository extends JpaRepository<Match, Long> {
     Optional<Match> findByMatchId(UUID matchId);
 
     List<Match> findByCompletedFalse();
+    List<Match> findByCompletedTrue();
+    List<Match> findByPlayerOneUsernameOrPlayerTwoUsername(String username1, String username2);
 
 }

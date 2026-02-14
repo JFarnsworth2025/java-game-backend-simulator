@@ -29,6 +29,16 @@ public class MatchController {
         return ResponseEntity.ok("Match completed and ratings updated.");
     }
 
+    @GetMapping("/history")
+    public ResponseEntity<?> getCompletedMatches() {
+        return ResponseEntity.ok(matchmakingService.getCompletedMatches());
+    }
+
+    @GetMapping("/history/{username}")
+    public ResponseEntity<?> getPlayerHistory(@PathVariable String username) {
+        return ResponseEntity.ok(matchmakingService.getMatchHistoryForPlayer(username));
+    }
+
     @GetMapping
     public ResponseEntity<?> getActiveMatches() {
         return ResponseEntity.ok(matchmakingService.getActiveMatches());
