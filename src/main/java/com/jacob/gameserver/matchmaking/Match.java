@@ -3,6 +3,7 @@ package com.jacob.gameserver.matchmaking;
 import com.jacob.gameserver.player.Player;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
@@ -14,16 +15,17 @@ public class Match {
     private Long id;
 
     @Column(unique = true, nullable = false)
-    private final UUID matchId;
+    private UUID matchId;
 
-    @ManyToOne
-    private final Player playerOne;
-    @ManyToOne
-    private final Player playerTwo;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Player playerOne;
+    @ManyToOne(fetch = FetchType.EAGER)
+    private Player playerTwo;
 
+    protected Match() {}
 
     private String winnerUsername;
-
+    private LocalDateTime createdAt;
     private boolean completed;
 
     public Match(UUID matchId, Player playerOne, Player playerTwo) {
@@ -31,6 +33,7 @@ public class Match {
         this.playerOne = playerOne;
         this.playerTwo = playerTwo;
         this.completed = false;
+        this.createdAt = LocalDateTime.now();
     }
 
     public Long getId() { return id; }

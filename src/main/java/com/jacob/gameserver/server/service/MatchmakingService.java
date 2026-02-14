@@ -2,6 +2,7 @@ package com.jacob.gameserver.server.service;
 
 import com.jacob.gameserver.matchmaking.Match;
 import com.jacob.gameserver.player.Player;
+import com.jacob.gameserver.repository.MatchRepository;
 import com.jacob.gameserver.repository.PlayerRepository;
 import org.springframework.stereotype.Service;
 
@@ -12,19 +13,22 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class MatchmakingService {
 
     private final PlayerRepository playerRepository;
+    private final MatchRepository matchRepository;
     private final Queue<Player> queue = new ConcurrentLinkedQueue<>();
     private final Set<String> playersInQueue = new HashSet<>();
-    private final Map<UUID, Match> activeMatches = new HashMap<>();
 
-    public MatchmakingService(PlayerRepository playerRepository) {
+    public MatchmakingService(PlayerRepository playerRepository, MatchRepository matchRepository) {
         this.playerRepository = playerRepository;
+        this.matchRepository = matchRepository;
     }
 
     private static final int K_FACTOR = 32;
 
     public synchronized Match joinQueue(Player player) {
 
-        for(Match match : activeMatches.values()) {
+        List<Match> activeMatches = matchRepository.findByCompletedFalse();
+
+        for(Match match : activeMatches) {
             if(match.getPlayerOne().getUsername().equals(player.getUsername()) || match.getPlayerTwo().getUsername().equals(player.getUsername())) {
                    return match;
             }
@@ -44,7 +48,7 @@ public class MatchmakingService {
                 playersInQueue.remove(queuedPlayer.getUsername());
 
                 Match match = new Match(UUID.randomUUID(), queuedPlayer, player);
-                activeMatches.put(match.getMatchId(), match);
+                matchRepository.save(match);
 
                 return match;
             }
@@ -57,11 +61,11 @@ public class MatchmakingService {
     }
 
     public Match getMatch(UUID matchId) {
-        return activeMatches.get(matchId);
+        return matchRepository.findByMatchId(matchId).orElse(null);
     }
 
-    public Collection<Match> getActiveMatches() {
-        return activeMatches.values();
+    public List<Match> getActiveMatches() {
+        return matchRepository.findByCompletedFalse();
     }
 
     private void updateRatings(Player winner, Player loser) {
@@ -79,7 +83,7 @@ public class MatchmakingService {
     }
 
     public synchronized Match completeMatch(UUID matchId, String winnerUsername) {
-        Match match = activeMatches.get(matchId);
+        Match match = matchRepository.findByMatchId(matchId).orElse(null);
 
         if(match == null) {
             return null;
@@ -105,7 +109,8 @@ public class MatchmakingService {
         playerRepository.save(winner);
         playerRepository.save(loser);
 
-        activeMatches.remove(matchId);
+        match.complete(winnerUsername);
+        matchRepository.save(match);
 
         return match;
     }
@@ -113,7 +118,6 @@ public class MatchmakingService {
     public synchronized void reset() {
         queue.clear();
         playersInQueue.clear();
-        activeMatches.clear();
     }
 
 }
