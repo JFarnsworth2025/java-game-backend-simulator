@@ -68,6 +68,14 @@ public class MatchmakingService {
         return matchRepository.findByCompletedFalse();
     }
 
+    public List<Match> getCompletedMatches() {
+        return matchRepository.findByCompletedTrue();
+    }
+
+    public List<Match> getMatchHistoryForPlayer(String username) {
+        return matchRepository.findByPlayerOneUsernameOrPlayerTwoUsername(username, username).stream().filter(Match::isCompleted).toList();
+    }
+
     private void updateRatings(Player winner, Player loser) {
 
         double expectedWinner = 1.0 / (1 + Math.pow(10, (loser.getRating() - winner.getRating()) / 400.0));
